@@ -94,7 +94,7 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(30.0),
+                      padding: const EdgeInsets.all(0.0),
                       child: Image.asset(
                         'assets/logo.png',
                         fit: BoxFit.contain,
