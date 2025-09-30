@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'pages/admin.dart'; // Import de ta page admin
+import 'pages/user.dart';    // 👈 Import de la page des chiens
+import 'pages/admin.dart';  // 👈 Import de la page admin
+
 
 void main() {
   runApp(const MyApp());
@@ -11,62 +13,166 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'Adopt\'Toutou',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.orange,
+      ),
+      home: const HomePage(),
+      routes: {
+          '/dogs-list': (context) => UserPage(),
+          '/admin': (context) => AdminPage(),
+
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
+// ============================================
+// PAGE D'ACCUEIL
+// ============================================
+
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _HomePageState extends State<HomePage> {
+  int _tapCount = 0;
+  DateTime? _lastTap;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  void _handleLogoTap() {
+    final now = DateTime.now();
+    
+    // Réinitialiser le compteur si plus de 2 secondes se sont écoulées
+    if (_lastTap == null || now.difference(_lastTap!) > const Duration(seconds: 2)) {
+      _tapCount = 1;
+    } else {
+      _tapCount++;
+    }
+    
+    _lastTap = now;
+    
+    // Si 3 taps rapides, ouvrir la page admin
+    if (_tapCount >= 3) {
+      _tapCount = 0;
+      _lastTap = null;
+      Navigator.pushNamed(context, '/admin');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // TON BOUTON DE TEST ICI
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AdminPage()),
-                );
-              },
-              child: const Text('Voir Admin Page'),
+      backgroundColor: const Color(0xFFF9EA9A),
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Spacer(flex: 2),
+                
+                // Logo cliquable (bouton caché pour admin)
+                GestureDetector(
+                  onTap: _handleLogoTap,
+                  child: Container(
+                    width: 250,
+                    height: 250,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF5D3A00).withOpacity(0.2),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: Image.asset(
+                        'assets/logo.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 40),
+                
+                // Titre
+                const Text(
+                  'ADOPT\'TOUTOU',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF5D3A00),
+                    letterSpacing: 2,
+                  ),
+                ),
+                
+                const SizedBox(height: 10),
+                
+               
+                
+                const Spacer(flex: 2),
+                
+                // Bouton principal
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/dogs-list');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFF98948),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 50,
+                      vertical: 18,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 8,
+                    shadowColor: const Color(0xFF5D3A00).withOpacity(0.3),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Voir les chiens',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Icon(Icons.pets, size: 24),
+                    ],
+                  ),
+                ),
+                
+                const Spacer(flex: 1),
+                
+                // Indication discrète pour l'admin
+                Text(
+                  '🐾',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: const Color(0xFF9B8816).withOpacity(0.3),
+                  ),
+                ),
+                
+                const SizedBox(height: 20),
+              ],
             ),
-            const SizedBox(height: 40),
-            // Le reste du code par défaut
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
